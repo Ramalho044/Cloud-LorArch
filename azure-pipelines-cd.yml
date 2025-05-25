@@ -1,17 +1,22 @@
-trigger: none
+trigger: none  # Pipeline executado manualmente
 
 stages:
 - stage: Deploy
+  displayName: 'Deploy na VM via SSH'
   jobs:
   - job: DeployJob
+    displayName: 'Executar deploy'
     pool:
       vmImage: 'ubuntu-latest'
     steps:
     - task: SSH@0
+      displayName: 'Conectar na VM e rodar comandos Docker'
       inputs:
-        sshEndpoint: 'MyVM-SSH'  # nome exato da sua Service Connection SSH
-        script: |
+        sshEndpoint: 'MyVM-SSH'        # Nome da sua Service Connection SSH no Azure DevOps
+        runOptions: 'commands'
+        commands: |
           docker stop lorarchapi || true
           docker rm lorarchapi || true
           docker pull ramalho011/lorarchapi:latest
           docker run -d -p 80:8080 --name lorarchapi ramalho011/lorarchapi:latest
+
