@@ -1,0 +1,17 @@
+trigger: none
+
+stages:
+- stage: Deploy
+  jobs:
+  - job: DeployJob
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - task: SSH@0
+      inputs:
+        sshEndpoint: 'MyVM-SSH'  # nome exato da sua Service Connection SSH
+        script: |
+          docker stop lorarchapi || true
+          docker rm lorarchapi || true
+          docker pull ramalho011/lorarchapi:latest
+          docker run -d -p 80:8080 --name lorarchapi ramalho011/lorarchapi:latest
